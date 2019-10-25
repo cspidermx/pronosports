@@ -14,9 +14,9 @@ def open_browser():
     chrome_options = ChOptions()
     chrome_options.add_argument('--headless')
     if platform.find('win') >= 0:
-        chrome_driver = os.getcwd() + "\\chromedriver.exe"
+        chrome_driver = os.getcwd() + "/chromedriver.exe"
     else:
-        chrome_driver = os.getcwd() + "\\chromedriver"
+        chrome_driver = os.getcwd() + "/chromedriver"
     drv = webdriver.Chrome(chrome_options=chrome_options, executable_path=chrome_driver)
     return drv
 
@@ -70,7 +70,7 @@ def getdias(driver):
                 cols = row.find_all('td')
                 cols = [ele.text.strip() for ele in cols]
                 tabla.append([ele for ele in cols if ele])  # Get rid of empty values
-            file = "output\\{:02d} {}.csv".format(i, dias[i])
+            file = "output/{:02d} {}.csv".format(i, dias[i])
             with open(os.path.join(os.getcwd(), file), 'w', newline='', encoding="utf-8") as csvfile:
                 writer = csv.writer(csvfile)
                 writer.writerows(tabla)
@@ -117,7 +117,7 @@ def get_nfl(driver, cuantas):
         cols = row.find_all('td')
         cols = [ele.text.strip() for ele in cols]
         tabla.append([ele for ele in cols if ele])  # Get rid of empty values
-    file = "output\\{:02d} NFL.csv".format(cuantas)
+    file = "output/{:02d} NFL.csv".format(cuantas)
     with open(os.path.join(os.getcwd(), file), 'w', newline='', encoding="utf-8") as csvfile:
         writer = csv.writer(csvfile)
         writer.writerows(tabla)
