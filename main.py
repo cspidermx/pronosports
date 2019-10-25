@@ -1,4 +1,5 @@
 import os
+from sys import platform
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -12,7 +13,10 @@ import time
 def open_browser():
     chrome_options = ChOptions()
     chrome_options.add_argument('--headless')
-    chrome_driver = os.getcwd() + "\\chromedriver.exe"
+    if platform.find('win') >= 0:
+        chrome_driver = os.getcwd() + "\\chromedriver.exe"
+    else:
+        chrome_driver = os.getcwd() + "\\chromedriver"
     drv = webdriver.Chrome(chrome_options=chrome_options, executable_path=chrome_driver)
     return drv
 
