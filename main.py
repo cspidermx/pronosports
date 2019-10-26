@@ -8,15 +8,17 @@ from selenium.webdriver.chrome.options import Options as ChOptions
 from bs4 import BeautifulSoup
 import csv
 import time
+import zipfile
+from my_email import send_mail
 
 
 def open_browser():
     chrome_options = ChOptions()
     chrome_options.add_argument('--headless')
     if platform.find('win') >= 0:
-        chrome_driver = os.getcwd() + "/chromedriver.exe"
+        chrome_driver = os.path.join(os.getcwd(), "chromedriver.exe")
     else:
-        chrome_driver = os.getcwd() + "/chromedriver"
+        chrome_driver = os.path.join(os.getcwd(), "chromedriver")
     drv = webdriver.Chrome(chrome_options=chrome_options, executable_path=chrome_driver)
     return drv
 
@@ -130,3 +132,16 @@ d = open_browser()
 ctas = getdias(d)
 get_nfl(d, ctas)
 d.close()
+
+with zipfile.ZipFile(os.path.join(os.getcwd(), "output/pronosports.zip"), 'w') as myzip:
+    for file in os.listdir(directory):
+        filename = os.fsdecode(file)
+        if filename.endswith(".csv"):
+            myzip.write(os.path.join(directory, filename), filename)
+for file in os.listdir(directory):
+    filename = os.fsdecode(file)
+    if filename.endswith(".csv"):
+        os.remove(os.path.join(directory, filename))
+
+send_mail(os.path.join(os.getcwd(), "output/pronosports.zip"), 'pronosports.zip')
+os.remove(os.path.join(os.getcwd(), "output/pronosports.zip"))
