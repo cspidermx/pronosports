@@ -16,7 +16,7 @@ def send_mail(filename, fname_short):
     try:
         server = smtplib.SMTP(smtp_server, port)
         server.ehlo()  # Can be omitted
-        server.starttls(context=context) # Secure the connection
+        server.starttls(context=context)  # Secure the connection
         server.ehlo()  # Can be omitted
         server.login(sender_email, password)
         # TODO: Send email here
@@ -26,7 +26,7 @@ def send_mail(filename, fname_short):
         message["From"] = sender_email
         message["To"] = receiver_email
         message["Subject"] = subject
-        message["Bcc"] = receiver_email  # Recommended for mass emails
+        # message["Bcc"] = receiver_email  # Recommended for mass emails
 
         # Add body to email
         message.attach(MIMEText(body, "plain"))
