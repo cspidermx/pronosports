@@ -39,7 +39,7 @@ def getdias(driver):
 
     i = 0
     cuantas = len(fechalist)
-    for fecha in range(0, cuantas):
+    for fecha in range(0, cuantas - 1):
         if i != 0:
             if i != 1:
                 btnfecha.click()
