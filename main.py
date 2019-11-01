@@ -1,5 +1,5 @@
 import os
-from sys import platform
+from sys import platform, exit as exitprogram
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -8,8 +8,9 @@ from selenium.webdriver.chrome.options import Options as ChOptions
 from bs4 import BeautifulSoup
 import csv
 import time
+from datetime import date, timedelta
 import zipfile
-from my_email import send_mail
+from my_email import send_mail, send_mail_fail
 
 
 def open_browser():
@@ -21,6 +22,25 @@ def open_browser():
         chrome_driver = os.path.join(os.getcwd(), "chromedriver")
     drv = webdriver.Chrome(chrome_options=chrome_options, executable_path=chrome_driver)
     return drv
+
+
+def check_page(f):
+    resp = True
+    if len(f) != 8:
+        resp = False
+    if f[0].text != '':
+        resp = False
+    dsem = int(time.strftime('%w', time.localtime()))
+    if dsem == 4:
+        jueves = date.today()
+    else:
+        if dsem > 4:
+            jueves = date.today() - timedelta(days=(dsem-4))
+        else:
+            jueves = date.today() - timedelta(days=(dsem + 3))
+    if f[1].text != jueves.strftime('%d/%m/%Y'):
+        resp = False
+    return resp
 
 
 def getdias(driver):
@@ -36,10 +56,15 @@ def getdias(driver):
     btnshow = driver.find_elements_by_xpath("(//button[@class='btn dropdown-toggle btn-default'])")[0]
     btnfecha.click()
     fechalist = driver.find_elements_by_xpath("(//ul[@class='dropdown-menu inner'])")[1].find_elements_by_tag_name("li")
+    if not check_page(fechalist):
+        send_mail_fail()
+        print('Pagina de pronosticos en estado erroneo')
+        d.close()
+        exitprogram(0)
 
     i = 0
     cuantas = len(fechalist)
-    for fecha in range(0, cuantas - 1):
+    for fecha in range(0, cuantas):
         if i != 0:
             if i != 1:
                 btnfecha.click()
@@ -72,8 +97,8 @@ def getdias(driver):
                 cols = row.find_all('td')
                 cols = [ele.text.strip() for ele in cols]
                 tabla.append([ele for ele in cols if ele])  # Get rid of empty values
-            file = "output/{:02d} {}.csv".format(i, dias[i])
-            with open(os.path.join(os.getcwd(), file), 'w', newline='', encoding="utf-8") as csvfile:
+            file_ = "output/{:02d} {}.csv".format(i, dias[i])
+            with open(os.path.join(os.getcwd(), file_), 'w', newline='', encoding="utf-8") as csvfile:
                 writer = csv.writer(csvfile)
                 writer.writerows(tabla)
         i += 1
@@ -119,8 +144,8 @@ def get_nfl(driver, cuantas):
         cols = row.find_all('td')
         cols = [ele.text.strip() for ele in cols]
         tabla.append([ele for ele in cols if ele])  # Get rid of empty values
-    file = "output/{:02d} NFL.csv".format(cuantas)
-    with open(os.path.join(os.getcwd(), file), 'w', newline='', encoding="utf-8") as csvfile:
+    file_ = "output/{:02d} NFL.csv".format(cuantas)
+    with open(os.path.join(os.getcwd(), file_), 'w', newline='', encoding="utf-8") as csvfile:
         writer = csv.writer(csvfile)
         writer.writerows(tabla)
 
