@@ -39,7 +39,8 @@ def check_page(f):
         else:
             jueves = date.today() - timedelta(days=(dsem + 3))
     if f[1].text != jueves.strftime('%d/%m/%Y'):
-        resp = False
+        if f[1].text != jueves.strftime('%m/%d/%Y'):
+            resp = False
     return resp
 
 
