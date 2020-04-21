@@ -20,6 +20,7 @@ def open_browser():
         chrome_driver = os.path.join(os.getcwd(), "chromedriver.exe")
     else:
         chrome_driver = os.path.join(os.getcwd(), "chromedriver")
+        os.chmod(chrome_driver, 0o755)
     drv = webdriver.Chrome(chrome_options=chrome_options, executable_path=chrome_driver)
     return drv
 
